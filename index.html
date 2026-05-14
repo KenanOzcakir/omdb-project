@@ -12,7 +12,6 @@
 </head>
 <body>
     <div class="app">
-        <!-- Header -->
         <header class="header">
             <div class="header-content">
                 <div class="logo">
@@ -35,15 +34,12 @@
             </div>
         </header>
 
-        <!-- Main Content -->
         <main class="main">
-            <!-- Hero Section -->
             <section class="hero">
                 <h1 class="hero-title">Find Your Next Favorite Movie</h1>
                 <p class="hero-subtitle">Search through millions of movies, series, and episodes using the Open Movie Database</p>
             </section>
 
-            <!-- Search Section -->
             <section class="search-section">
                 <form id="search-form" class="search-form">
                     <div class="search-container">
@@ -65,7 +61,6 @@
                         </button>
                     </div>
 
-                    <!-- Filters -->
                     <div class="filters">
                         <div class="filter-group">
                             <label for="type-filter" class="filter-label">Type</label>
@@ -91,13 +86,11 @@
                 </form>
             </section>
 
-            <!-- Loading State -->
             <div id="loading" class="loading hidden">
                 <div class="spinner"></div>
                 <p>Searching movies...</p>
             </div>
 
-            <!-- Error State -->
             <div id="error" class="error-container hidden">
                 <svg class="error-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
@@ -108,7 +101,6 @@
                 <p id="error-message" class="error-message">We couldn't find what you're looking for. Try a different search term.</p>
             </div>
 
-            <!-- Results Section -->
             <section id="results-section" class="results-section hidden">
                 <div class="results-header">
                     <h2 class="results-title">Search Results</h2>
@@ -116,7 +108,6 @@
                 </div>
                 <div id="results-grid" class="results-grid"></div>
                 
-                <!-- Pagination -->
                 <div id="pagination" class="pagination hidden">
                     <button id="prev-page" class="pagination-btn" disabled>
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -134,7 +125,6 @@
                 </div>
             </section>
 
-            <!-- Movie Detail Modal -->
             <div id="movie-modal" class="modal hidden">
                 <div class="modal-overlay"></div>
                 <div class="modal-content">
@@ -144,13 +134,11 @@
                         </svg>
                     </button>
                     <div id="modal-body" class="modal-body">
-                        <!-- Movie details will be injected here -->
                     </div>
                 </div>
             </div>
         </main>
 
-        <!-- Footer -->
         <footer class="footer">
             <p>Powered by <a href="https://www.omdbapi.com/" target="_blank" rel="noopener noreferrer">OMDb API</a></p>
         </footer>

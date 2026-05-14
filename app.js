@@ -1,19 +1,10 @@
-/**
- * OMDB Movie Search Application
- * A single-page application for searching movies using the OMDB API
- */
-
-// Configuration
 const CONFIG = {
-    // Users need to get their own API key from https://www.omdbapi.com/apikey.aspx
-    // For demo purposes, using a demo key - replace with your own key
-    API_KEY: '4a3b711b', // Demo API key
+    API_KEY: '4a3b711b',
     API_BASE_URL: 'https://www.omdbapi.com/',
     RESULTS_PER_PAGE: 10,
     STORAGE_KEY: 'omdb_last_search'
 };
 
-// Application State
 const state = {
     currentSearch: '',
     currentType: '',
@@ -24,7 +15,6 @@ const state = {
     searchCache: new Map()
 };
 
-// DOM Elements
 const elements = {
     searchForm: document.getElementById('search-form'),
     searchInput: document.getElementById('search-input'),
@@ -46,37 +36,29 @@ const elements = {
     closeModal: document.getElementById('close-modal')
 };
 
-// Initialize Application
 function init() {
     bindEvents();
     restoreLastSearch();
 }
 
-// Bind Event Listeners
 function bindEvents() {
-    // Search form submission
     elements.searchForm.addEventListener('submit', handleSearch);
     
-    // Pagination
     elements.prevPage.addEventListener('click', () => changePage(-1));
     elements.nextPage.addEventListener('click', () => changePage(1));
     
-    // Modal
     elements.closeModal.addEventListener('click', closeModal);
     elements.modal.querySelector('.modal-overlay').addEventListener('click', closeModal);
     
-    // Keyboard navigation
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && !elements.modal.classList.contains('hidden')) {
             closeModal();
         }
     });
     
-    // URL state management
     window.addEventListener('popstate', handlePopState);
 }
 
-// Handle Search Form Submission
 async function handleSearch(e) {
     e.preventDefault();
     
@@ -88,34 +70,27 @@ async function handleSearch(e) {
     state.currentYear = elements.yearFilter.value;
     state.currentPage = 1;
     
-    // Update URL
     updateURL();
     
-    // Save to localStorage
     saveLastSearch();
     
     await performSearch();
 }
 
-// Perform Search API Call
 async function performSearch() {
     const { currentSearch, currentType, currentYear, currentPage } = state;
     
-    // Generate cache key
     const cacheKey = `${currentSearch}-${currentType}-${currentYear}-${currentPage}`;
     
-    // Check cache first
     if (state.searchCache.has(cacheKey)) {
         const cachedData = state.searchCache.get(cacheKey);
         displayResults(cachedData);
         return;
     }
     
-    // Show loading
     showLoading();
     
     try {
-        // Build API URL
         const params = new URLSearchParams({
             apikey: CONFIG.API_KEY,
             s: currentSearch,
@@ -138,10 +113,8 @@ async function performSearch() {
             return;
         }
         
-        // Cache the results
         state.searchCache.set(cacheKey, data);
         
-        // Update total results
         state.totalResults = parseInt(data.totalResults, 10);
         
         displayResults(data);
@@ -152,7 +125,6 @@ async function performSearch() {
     }
 }
 
-// Display Search Results
 function displayResults(data) {
     hideLoading();
     hideError();
@@ -160,10 +132,8 @@ function displayResults(data) {
     const movies = data.Search || [];
     state.totalResults = parseInt(data.totalResults, 10);
     
-    // Update results count
     elements.resultsCount.textContent = `Found ${state.totalResults.toLocaleString()} results for "${state.currentSearch}"`;
     
-    // Clear and populate grid
     elements.resultsGrid.innerHTML = '';
     
     movies.forEach(movie => {
@@ -171,14 +141,11 @@ function displayResults(data) {
         elements.resultsGrid.appendChild(card);
     });
     
-    // Show results section
     elements.resultsSection.classList.remove('hidden');
     
-    // Update pagination
     updatePagination();
 }
 
-// Create Movie Card Element
 function createMovieCard(movie) {
     const card = document.createElement('article');
     card.className = 'movie-card';
@@ -208,7 +175,6 @@ function createMovieCard(movie) {
         </div>
     `;
     
-    // Click handler
     card.addEventListener('click', () => showMovieDetail(movie.imdbID));
     card.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -220,7 +186,6 @@ function createMovieCard(movie) {
     return card;
 }
 
-// Show Movie Detail Modal
 async function showMovieDetail(imdbID) {
     elements.modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
@@ -263,7 +228,6 @@ async function showMovieDetail(imdbID) {
     }
 }
 
-// Create Movie Detail HTML
 function createMovieDetailHTML(movie) {
     const posterHTML = movie.Poster && movie.Poster !== 'N/A'
         ? `<img src="${movie.Poster}" alt="${movie.Title} poster">`
@@ -358,13 +322,11 @@ function createMovieDetailHTML(movie) {
     `;
 }
 
-// Close Modal
 function closeModal() {
     elements.modal.classList.add('hidden');
     document.body.style.overflow = '';
 }
 
-// Update Pagination
 function updatePagination() {
     const totalPages = Math.ceil(state.totalResults / CONFIG.RESULTS_PER_PAGE);
     
@@ -379,7 +341,6 @@ function updatePagination() {
     elements.nextPage.disabled = state.currentPage >= totalPages;
 }
 
-// Change Page
 async function changePage(direction) {
     const totalPages = Math.ceil(state.totalResults / CONFIG.RESULTS_PER_PAGE);
     const newPage = state.currentPage + direction;
@@ -390,13 +351,11 @@ async function changePage(direction) {
     updateURL();
     saveLastSearch();
     
-    // Scroll to top of results
     elements.resultsSection.scrollIntoView({ behavior: 'smooth' });
     
     await performSearch();
 }
 
-// Show Loading State
 function showLoading() {
     state.isLoading = true;
     elements.loading.classList.remove('hidden');
@@ -404,13 +363,11 @@ function showLoading() {
     elements.resultsSection.classList.add('hidden');
 }
 
-// Hide Loading State
 function hideLoading() {
     state.isLoading = false;
     elements.loading.classList.add('hidden');
 }
 
-// Show Error State
 function showError(message) {
     hideLoading();
     elements.resultsSection.classList.add('hidden');
@@ -427,12 +384,10 @@ function showError(message) {
     }
 }
 
-// Hide Error State
 function hideError() {
     elements.error.classList.add('hidden');
 }
 
-// Update URL with Search State
 function updateURL() {
     const params = new URLSearchParams();
     
@@ -451,7 +406,6 @@ function updateURL() {
     }, '', newURL);
 }
 
-// Handle Browser Back/Forward
 function handlePopState(e) {
     if (e.state) {
         state.currentSearch = e.state.currentSearch || '';
@@ -459,7 +413,6 @@ function handlePopState(e) {
         state.currentYear = e.state.currentYear || '';
         state.currentPage = e.state.currentPage || 1;
         
-        // Update form values
         elements.searchInput.value = state.currentSearch;
         elements.typeFilter.value = state.currentType;
         elements.yearFilter.value = state.currentYear;
@@ -470,7 +423,6 @@ function handlePopState(e) {
     }
 }
 
-// Save Last Search to LocalStorage
 function saveLastSearch() {
     const searchData = {
         search: state.currentSearch,
@@ -487,9 +439,7 @@ function saveLastSearch() {
     }
 }
 
-// Restore Last Search from LocalStorage or URL
 function restoreLastSearch() {
-    // First check URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const urlSearch = urlParams.get('s');
     
@@ -499,7 +449,6 @@ function restoreLastSearch() {
         state.currentYear = urlParams.get('y') || '';
         state.currentPage = parseInt(urlParams.get('page'), 10) || 1;
         
-        // Update form values
         elements.searchInput.value = state.currentSearch;
         elements.typeFilter.value = state.currentType;
         elements.yearFilter.value = state.currentYear;
@@ -508,20 +457,17 @@ function restoreLastSearch() {
         return;
     }
     
-    // Fall back to localStorage
     try {
         const saved = localStorage.getItem(CONFIG.STORAGE_KEY);
         if (saved) {
             const data = JSON.parse(saved);
             
-            // Only restore if less than 24 hours old
             if (Date.now() - data.timestamp < 24 * 60 * 60 * 1000) {
                 state.currentSearch = data.search || '';
                 state.currentType = data.type || '';
                 state.currentYear = data.year || '';
                 state.currentPage = data.page || 1;
                 
-                // Update form values
                 elements.searchInput.value = state.currentSearch;
                 elements.typeFilter.value = state.currentType;
                 elements.yearFilter.value = state.currentYear;
@@ -536,7 +482,6 @@ function restoreLastSearch() {
     }
 }
 
-// Escape HTML to prevent XSS
 function escapeHTML(str) {
     if (!str) return '';
     const div = document.createElement('div');
@@ -544,5 +489,4 @@ function escapeHTML(str) {
     return div.innerHTML;
 }
 
-// Initialize the application when DOM is ready
 document.addEventListener('DOMContentLoaded', init);
